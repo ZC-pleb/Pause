@@ -80,6 +80,12 @@
             line-height: 1;
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
             letter-spacing: -2px;
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
+
+        .streak-number:hover {
+            opacity: 0.7;
         }
 
         .streak-label {
@@ -89,6 +95,110 @@
             color: rgba(255,255,255,0.4);
             margin-top: 6px;
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+        }
+
+        .streak-edit-hint {
+            font-size: 0.6rem;
+            color: rgba(255,255,255,0.2);
+            margin-top: 8px;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            letter-spacing: 1px;
+        }
+
+        /* Streak Editor Modal */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.85);
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s;
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal {
+            background: #111113;
+            border: 1px solid #222;
+            padding: 40px;
+            text-align: center;
+            max-width: 320px;
+            width: 90%;
+        }
+
+        .modal h3 {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            font-weight: 400;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: #606060;
+            margin-bottom: 24px;
+        }
+
+        .modal input {
+            width: 100%;
+            background: #0a0a0b;
+            border: 1px solid #333;
+            padding: 16px;
+            font-size: 2rem;
+            color: #fff;
+            text-align: center;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            font-weight: 200;
+            letter-spacing: -1px;
+            margin-bottom: 24px;
+            outline: none;
+        }
+
+        .modal input:focus {
+            border-color: #444;
+        }
+
+        .modal-buttons {
+            display: flex;
+            gap: 12px;
+        }
+
+        .modal-buttons button {
+            flex: 1;
+            padding: 12px 20px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .btn-save {
+            background: #ffffff;
+            color: #0a0a0b;
+        }
+
+        .btn-save:hover {
+            background: #e0e0e0;
+        }
+
+        .btn-modal-cancel {
+            background: #1a1a1b;
+            color: #707070;
+        }
+
+        .btn-modal-cancel:hover {
+            background: #252525;
         }
 
         .hero-content {
@@ -352,8 +462,9 @@
         <div class="hero-overlay"></div>
         
         <div class="streak-display">
-            <div class="streak-number" id="streakCount">0</div>
+            <div class="streak-number" id="streakCount" onclick="openStreakEditor()">0</div>
             <div class="streak-label">Days</div>
+            <div class="streak-edit-hint">tap to edit</div>
         </div>
 
         <div class="hero-content">
@@ -363,6 +474,18 @@
         </div>
         <div class="scroll-indicator">Scroll</div>
     </section>
+
+    <!-- Streak Editor Modal -->
+    <div class="modal-overlay" id="streakModal" onclick="closeStreakEditor(event)">
+        <div class="modal" onclick="event.stopPropagation()">
+            <h3>Set Your Streak</h3>
+            <input type="number" id="streakInput" min="0" placeholder="0">
+            <div class="modal-buttons">
+                <button class="btn-modal-cancel" onclick="closeStreakEditor()">Cancel</button>
+                <button class="btn-save" onclick="saveStreak()">Save</button>
+            </div>
+        </div>
+    </div>
 
     <main class="main">
         <div class="container">
@@ -494,6 +617,27 @@
             document.getElementById('streakCount').textContent = getStreakDays();
         }
 
+        function openStreakEditor() {
+            document.getElementById('streakInput').value = getStreakDays();
+            document.getElementById('streakModal').classList.add('active');
+            document.getElementById('streakInput').focus();
+        }
+
+        function closeStreakEditor(event) {
+            if (event && event.target !== event.currentTarget) return;
+            document.getElementById('streakModal').classList.remove('active');
+        }
+
+        function saveStreak() {
+            const days = parseInt(document.getElementById('streakInput').value) || 0;
+            const now = new Date();
+            const startDate = new Date(now.getTime() - (days * 24 * 60 * 60 * 1000));
+            localStorage.setItem(STORAGE_KEY, startDate.toISOString());
+            updateDisplay();
+            closeStreakEditor();
+            showToast("Streak updated.");
+        }
+
         function showRandomQuote() {
             let newQuoteIndex;
             do {
@@ -572,6 +716,12 @@
         document.getElementById('quoteSource').textContent = quote.source;
         
         preloadAndInit();
+
+        // Close modal on escape key
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') closeStreakEditor();
+            if (e.key === 'Enter' && document.getElementById('streakModal').classList.contains('active')) saveStreak();
+        });
     </script>
 </body>
 </html>
