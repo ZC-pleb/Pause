@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pause</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Georgia', 'Times New Roman', serif;
+            background: linear-gradient(180deg, #0d1117 0%, #161b22 50%, #1a1f26 100%);
+            min-height: 100vh;
+            padding: 40px 20px;
+            color: #c9d1d9;
+            line-height: 1.8;
+        }
+
+        .container {
+            max-width: 680px;
+            margin: 0 auto;
+        }
+
+        .streak-container {
+            text-align: center;
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 16px;
+            padding: 30px;
+            margin-bottom: 50px;
+        }
+
+        .streak-label {
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            color: #6e7681;
+            margin-bottom: 8px;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+        }
+
+        .streak-number {
+            font-size: 4.5rem;
+            font-weight: 400;
+            color: #58a6ff;
+            line-height: 1;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+        }
+
+        .streak-unit {
+            font-size: 1rem;
+            color: #6e7681;
+            margin-top: 5px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+        }
+
+        .opening {
+            font-size: 1.8rem;
+            font-weight: 400;
+            color: #f0f6fc;
+            margin-bottom: 30px;
+            text-align: center;
+            letter-spacing: -0.5px;
+        }
+
+        .content p {
+            margin-bottom: 24px;
+            font-size: 1.15rem;
+            color: #b1bac4;
+        }
+
+        .content p:first-of-type {
+            font-size: 1.25rem;
+            color: #c9d1d9;
+        }
+
+        .highlight {
+            color: #f0f6fc;
+            font-style: italic;
+        }
+
+        .emphasis {
+            color: #58a6ff;
+        }
+
+        .section-break {
+            text-align: center;
+            margin: 40px 0;
+            color: #30363d;
+            font-size: 1.5rem;
+            letter-spacing: 8px;
+        }
+
+        .call-to-action {
+            background: rgba(88, 166, 255, 0.08);
+            border-left: 3px solid #58a6ff;
+            padding: 25px 30px;
+            margin: 40px 0;
+            border-radius: 0 12px 12px 0;
+        }
+
+        .call-to-action p {
+            margin-bottom: 12px;
+            color: #c9d1d9;
+        }
+
+        .call-to-action p:last-child {
+            margin-bottom: 0;
+        }
+
+        .closing {
+            text-align: center;
+            margin-top: 50px;
+            padding-top: 40px;
+            border-top: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .closing-message {
+            font-size: 1.4rem;
+            color: #f0f6fc;
+            margin-bottom: 30px;
+            font-style: italic;
+        }
+
+        .actions {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-top: 30px;
+        }
+
+        button {
+            padding: 14px 28px;
+            font-size: 0.95rem;
+            font-weight: 500;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+        }
+
+        .btn-primary {
+            background: #238636;
+            color: #ffffff;
+        }
+
+        .btn-primary:hover {
+            background: #2ea043;
+        }
+
+        .btn-secondary {
+            background: rgba(255,255,255,0.08);
+            color: #c9d1d9;
+            border: 1px solid rgba(255,255,255,0.15);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255,255,255,0.12);
+        }
+
+        .btn-danger {
+            background: rgba(248, 81, 73, 0.15);
+            color: #f85149;
+            border: 1px solid rgba(248, 81, 73, 0.3);
+        }
+
+        .btn-danger:hover {
+            background: rgba(248, 81, 73, 0.25);
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .reset-confirm {
+            background: rgba(248, 81, 73, 0.08);
+            border: 1px solid rgba(248, 81, 73, 0.2);
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .reset-confirm p {
+            margin-bottom: 15px;
+            color: #f85149;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: #238636;
+            color: white;
+            padding: 16px 32px;
+            border-radius: 8px;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            font-weight: 500;
+            opacity: 0;
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+
+        .toast.show {
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
+        }
+
+        @media (max-width: 600px) {
+            body {
+                padding: 30px 16px;
+            }
+            
+            .opening {
+                font-size: 1.5rem;
+            }
+            
+            .content p {
+                font-size: 1.05rem;
+            }
+            
+            .streak-number {
+                font-size: 3.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="streak-container">
+            <div class="streak-label">Your Streak</div>
+            <div class="streak-number" id="streakCount">0</div>
+            <div class="streak-unit">days</div>
+        </div>
+
+        <h1 class="opening">Pause for a moment.</h1>
+
+        <div class="content">
+            <p>Whatever urge brought you here will pass. It always does. <span class="highlight">You do not need to obey it.</span></p>
+
+            <p>Right now, your mind is offering you an easy release, a quick escape that promises comfort and delivers emptiness. You already know this. You have felt the cycle enough times to recognize it. Acting on it will not make you more whole, more at peace, or more alive. It will only quiet you briefly and leave you wanting again.</p>
+
+            <p><span class="emphasis">God did not create you to be ruled by impulse.</span></p>
+
+            <p>Desire itself is not the problem. Desire is powerful because it is meant to be directed toward love, patience, and meaning. When it is diverted into habit and secrecy, it loses its dignity. Each time you choose restraint, even when it feels uncomfortable, you are choosing freedom over reflex. You are choosing to live deliberately rather than reactively.</p>
+
+            <div class="section-break">· · ·</div>
+
+            <p>You may feel alone right now, but you are not unseen. God is present even in this quiet moment, not watching to condemn, but waiting for you to choose yourself. Scripture does not ask you to be perfect—it asks you to be awake. To notice when something is pulling you away from the person you are meant to become.</p>
+
+            <p><span class="highlight">This urge is not a command. It is a sensation.</span> It will peak, then fall, whether you act on it or not.</p>
+
+            <div class="call-to-action">
+                <p>Stay with it. Breathe. Let the moment pass.</p>
+                <p>Think about how you want to feel ten minutes from now. <span class="emphasis">Calm. Clear. Grounded.</span> Not scattered or ashamed. That future version of you is created by what you decide in this instant.</p>
+            </div>
+
+            <p>You do not need to negotiate with temptation. You do not need to justify it. You can simply refuse it.</p>
+
+            <p>Choose restraint as an act of respect—for your body, your mind, and the life God is shaping in you. Each time you turn away, you make the next choice easier. <span class="highlight">Discipline compounds. Integrity compounds. Peace compounds.</span></p>
+
+            <div class="section-break">· · ·</div>
+
+            <p>You came here because part of you wants something better.</p>
+
+            <p><span class="emphasis">Honor that part.</span></p>
+
+            <p>Close this page. Stand up. Do something physical. Say a prayer if you can—even a simple one. Ask for strength, not because you are weak, but because you are choosing to grow.</p>
+
+            <p><span class="highlight">This moment matters. And you are capable of choosing well.</span></p>
+        </div>
+
+        <div class="closing">
+            <div class="actions">
+                <button class="btn-primary" onclick="stayedStrong()">I Chose Well</button>
+                <button class="btn-secondary" onclick="toggleResetConfirm()">Reset Streak</button>
+            </div>
+
+            <div id="resetConfirm" class="reset-confirm hidden">
+                <p>Start fresh? Your streak will reset to Day 0.</p>
+                <button class="btn-danger" onclick="resetStreak()">Reset</button>
+                <button class="btn-secondary" onclick="toggleResetConfirm()">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="toast" id="toast">You chose well. Keep going.</div>
+
+    <script>
+        const STORAGE_KEY = 'accountability_streak_start';
+
+        function getStreakDays() {
+            const startDate = localStorage.getItem(STORAGE_KEY);
+            if (!startDate) return 0;
+            
+            const start = new Date(startDate);
+            const now = new Date();
+            const diffTime = Math.abs(now - start);
+            const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+            return diffDays;
+        }
+
+        function updateDisplay() {
+            const days = getStreakDays();
+            document.getElementById('streakCount').textContent = days;
+        }
+
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.classList.add('show');
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+
+        function stayedStrong() {
+            if (!localStorage.getItem(STORAGE_KEY)) {
+                localStorage.setItem(STORAGE_KEY, new Date().toISOString());
+            }
+            showToast("You chose well. Keep going.");
+            updateDisplay();
+        }
+
+        function toggleResetConfirm() {
+            const el = document.getElementById('resetConfirm');
+            el.classList.toggle('hidden');
+        }
+
+        function resetStreak() {
+            localStorage.setItem(STORAGE_KEY, new Date().toISOString());
+            toggleResetConfirm();
+            updateDisplay();
+            showToast("Day 0. A new beginning.");
+        }
+
+        // Initialize
+        if (!localStorage.getItem(STORAGE_KEY)) {
+            localStorage.setItem(STORAGE_KEY, new Date().toISOString());
+        }
+        updateDisplay();
+    </script>
+</body>
+</html>
